@@ -5,9 +5,13 @@ plugins {
     id 'application'
 }
 
+mainClassName = 'org.jetbrains.ktor.netty.DevelopmentHost'
+
 version = '0.1.0'
 group = 'net.gegy1000'
 archivesBaseName = 'hgk'
+
+sourceCompatibility = '1.8'
 
 repositories {
     mavenLocal()
@@ -15,6 +19,8 @@ repositories {
     jcenter()
 
     maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
+    maven { url 'https://dl.bintray.com/kotlin/ktor' }
+    maven { url "https://dl.bintray.com/kotlin/kotlinx" }
 }
 
 dependencies {
@@ -22,13 +28,17 @@ dependencies {
     compile 'com.google.code.gson:gson:1.7.2'
     compile 'org.slf4j:slf4j-log4j12:1.7.5'
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile 'org.jetbrains.kotlin:kotlin-stdlib'
+    compile 'org.jetbrains.ktor:ktor-netty:0.4.0-alpha-10'
+    compile 'org.jetbrains.ktor:ktor-gson:0.4.0-alpha-10'
 }
 
-processResources {
-    configurations.compile.each {
-        from (zipTree(it)) {
-            exclude "**/META-INF/"
-        }
+kotlin {
+    experimental {
+        coroutines 'enable'
     }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
 }
