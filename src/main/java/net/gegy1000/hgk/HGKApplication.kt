@@ -40,7 +40,7 @@ fun Application.main() {
 
             session.lastCall = System.currentTimeMillis()
 
-            call.respond(SessionDataModel(session.identifier, session.updateIndex, snapshots.filterIndexed { i, _ -> i > +snapshots.size - maxSnapshots }.toTypedArray()))
+            call.respond(SessionDataModel(session.identifier, session.updateIndex - 1, snapshots.filterIndexed { i, _ -> i > +snapshots.size - maxSnapshots }.toTypedArray()))
         }
         get("/v1/session/{session}") {
             val sessionId = call.parameters["session"]

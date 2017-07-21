@@ -9,6 +9,7 @@ import net.gegy1000.hgk.model.SnapshotModel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.Random
+import kotlin.system.measureTimeMillis
 
 data class GameSession(val identifier: String, val seed: Long) {
     val logger: Logger = LoggerFactory.getLogger("session-$identifier")
@@ -35,6 +36,13 @@ data class GameSession(val identifier: String, val seed: Long) {
         updateIndex++
     }
 
+    private fun skipTicks(count: Int) {
+        repeat(count) {
+            snapshots.add(createSnapshot())
+            updateIndex++
+        }
+    }
+
     private fun createSnapshot(): SnapshotModel {
         val entities = entities.map { SnapshotModel.Entity(it.type, it.tileX, it.tileY, it.model) }.toTypedArray()
         return SnapshotModel(updateIndex, entities)
@@ -42,8 +50,13 @@ data class GameSession(val identifier: String, val seed: Long) {
 
     @Synchronized
     fun catchUpUpdates() {
-        while (updateIndex < expectedUpdate) {
-            update()
+        while (updateIndex < expectedUpdate + 5) {
+            val time = measureTimeMillis { update() }
+            if (time > TimerConstants.TICK_RATE_MILLIS) {
+                val skip = time / TimerConstants.TICK_RATE_MILLIS
+                logger.info("Update took $time millis, skipping $skip ticks")
+                skipTicks(skip.toInt())
+            }
         }
     }
 
