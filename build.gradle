@@ -13,6 +13,17 @@ archivesBaseName = 'hgk'
 
 sourceCompatibility = '1.8'
 
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -31,14 +42,4 @@ dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib'
     compile 'org.jetbrains.ktor:ktor-netty:0.4.0-alpha-10'
     compile 'org.jetbrains.ktor:ktor-gson:0.4.0-alpha-10'
-}
-
-kotlin {
-    experimental {
-        coroutines 'enable'
-    }
-}
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
 }
