@@ -2,7 +2,7 @@ package net.gegy1000.hgk.entity
 
 import java.util.Random
 
-data class BasePlayerStatistics(
+data class PlayerStatistics(
         val aggresivity: Float,
         val likability: Float,
         val friendliness: Float,
@@ -17,7 +17,7 @@ data class BasePlayerStatistics(
         val firstAidSkill: Float
 ) {
     companion object {
-        fun random(random: Random) = BasePlayerStatistics(
+        fun random(random: Random) = PlayerStatistics(
                 aggresivity = random.nextFloat(),
                 likability = random.nextFloat(),
                 friendliness = random.nextFloat(),

@@ -1,9 +1,11 @@
 package net.gegy1000.hgk.entity.ai.goal
 
+import net.gegy1000.hgk.MetabolismConstants
 import net.gegy1000.hgk.arena.GroundType
 import net.gegy1000.hgk.entity.Player
+import net.gegy1000.hgk.session.StatusMessage.Property
 
-class HarvestFoodGoal(player: Player) : Goal(player, Goal.Type.HARVEST_FOOD) {
+class HarvestFoodGoal(player: Player) : Goal(player, GoalType.HARVEST_FOOD) {
     override val fulfilled: Boolean
         get() = true
 
@@ -13,12 +15,19 @@ class HarvestFoodGoal(player: Player) : Goal(player, Goal.Type.HARVEST_FOOD) {
     override fun update(input: GoalData) {
         val tile = player.arena[player.tileX, player.tileY]
         if (tile.groundType == GroundType.FOREST || tile.groundType == GroundType.BUSHES) {
-            val poison = player.arena.session.random.nextFloat()
+            val foodType = if (player.random.nextFloat() > 0.5F) "berries" else "fruit"
+            val properties = arrayOf(Property("food_type", foodType), Property("vegetation", tile.groundType.statusName))
+            val poison = player.random.nextFloat()
             if (player.statistics.plantKnowledge > poison / 4.0) {
-                player.foodProcessing += 40
+                player.metabolism.eatFood(MetabolismConstants.HARVEST_FOOD_INCREMENT)
+                if (player.metabolism.hunger < 0.2F) {
+                    player.post(arrayOf("goal.find_food_snack.action"), properties)
+                } else {
+                    player.post(arrayOf("goal.find_food.action", "goal.find_food.infinitive"), properties)
+                }
             } else {
-                //TODO: rip you
-                player.logger.info("${player.name} ate poisonous food")
+                player.post(arrayOf("event.poisoned_food"), properties)
+                player.dead = true
             }
         }
     }

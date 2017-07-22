@@ -15,6 +15,9 @@ abstract class Entity(val arena: Arena, x: Int, y: Int) {
     var tileX: Int = x
     var tileY: Int = y
 
+    var tickIndex = 0
+
     open fun update() {
+        tickIndex++
     }
 }

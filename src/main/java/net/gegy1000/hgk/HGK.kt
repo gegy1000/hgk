@@ -62,6 +62,12 @@ fun Application.main() {
             SessionManager.cleanup()
             if (SessionManager.activeSessionCount < 10) {
                 val session = SessionManager.create(creationData)
+                creationData.players.forEach {
+                    if (it.name == null) {
+                        call.respond(ErrorModel("Missing name property"))
+                        return@post
+                    }
+                }
                 call.respond(SessionDataModel(session.identifier, -1, emptyArray()))
             } else {
                 call.respond(ErrorModel("Could not create session, maximum running limit reached"))

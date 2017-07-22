@@ -3,7 +3,7 @@ package net.gegy1000.hgk.entity.ai.goal
 import net.gegy1000.hgk.entity.Player
 import net.gegy1000.hgk.entity.ai.navigation.Path
 
-class FollowPathGoal(player: Player) : Goal(player, Goal.Type.MOVE_TO) {
+class FollowPathGoal(player: Player) : Goal(player, GoalType.MOVE_TO) {
     override val fulfilled: Boolean
         get() {
             val input = input ?: return true
@@ -14,14 +14,11 @@ class FollowPathGoal(player: Player) : Goal(player, Goal.Type.MOVE_TO) {
     var currentTicks = 0
     var totalTicks = 0
 
-    var lastNode = 0
-
     override fun start(input: GoalData) {
         val path: Path = input["path"]
         currentTicks = 0
         totalTicks = (path.length / player.tilesPerTick).toInt()
-        lastNode = -1
-        player.logger.info("${player.name} following path to ${path.targetX}, ${path.targetY}")
+        player.logger.info("${player.info.name} following path to ${path.targetX}, ${path.targetY}")
     }
 
     override fun update(input: GoalData) {
@@ -31,15 +28,9 @@ class FollowPathGoal(player: Player) : Goal(player, Goal.Type.MOVE_TO) {
             val node = path[nodeIndex]
             player.tileX = node.x
             player.tileY = node.y
-            if (nodeIndex != lastNode) {
-                if (!player.drainEnergy(2)) {
-                    failed = true
-                    return
-                }
-                lastNode = nodeIndex
-            }
+            player.ai.moved = true
             if (currentTicks >= totalTicks) {
-                player.logger.info("${player.name} successfully followed path to ${path.targetX}, ${path.targetY}")
+                player.logger.info("${player.info.name} successfully followed path to ${path.targetX}, ${path.targetY}")
             }
         }
     }

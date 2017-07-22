@@ -1,0 +1,91 @@
+{
+  "messages": [
+    {
+      "name": "goal.find_water.action",
+      "options": [
+        "{name} found and drank water after traveling to it",
+        "{name} drank water",
+        "{name} found water, and drank after a travel"
+      ]
+    },
+    {
+      "name": "goal.find_water.infinitive",
+      "options": [
+        "to quench {pronoun_pos} thirst",
+        ""
+      ]
+    },
+    {
+      "name": "goal.find_food.action",
+      "options": [
+        "{name} found and ate some {food_type} after traveling to some {vegetation}",
+        "{name} ate {food_type} that {pronoun_ps} found in some {vegetation}"
+      ]
+    },
+    {
+      "name": "goal.find_food.infinitive",
+      "options": [
+        "to fill {pronoun_pos} stomach",
+        ""
+      ]
+    },
+    {
+      "name": "goal.find_food_snack.action",
+      "options": [
+        "{name} found and snacked on some {food_type} after traveling to some {vegetation}",
+        "{name} snacked on some {food_type} that {pronoun_ps} found in some {vegetation}"
+      ]
+    },
+    {
+      "name": "event.dehydration",
+      "options": [
+        "{name} got dehydrated and died",
+        "{name} died from dehydration"
+      ]
+    },
+    {
+      "name": "event.no_energy",
+      "options": [
+        "{name} passed out due to lack of energy",
+        "{name} tired {pronoun_rf}, and passed out"
+      ]
+    },
+    {
+      "name": "event.starve",
+      "options": [
+        "{name} starved to death",
+        "{name} died due to starvation",
+        "{name} starved and died"
+      ]
+    },
+    {
+      "name": "event.poisoned_food",
+      "options": [
+        "{name} ate poisonous {food_type} and died",
+        "{name} died after eating poisonous {food_type}"
+      ]
+    },
+    {
+      "name": "goal.rest.action",
+      "options": [
+        "{name} took a rest",
+        "{name} rested"
+      ]
+    },
+    {
+      "name": "goal.rest.infinitive",
+      "options": [
+        "to conserve energy",
+        "to regain energy",
+        ""
+      ]
+    },
+    {
+      "name": "event.awake",
+      "options": [
+        "{name} awoke",
+        "{name} woke up"
+      ]
+    }
+  ]
+}

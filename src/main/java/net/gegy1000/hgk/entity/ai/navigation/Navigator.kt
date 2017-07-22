@@ -38,7 +38,8 @@ class Navigator(private val player: Player) {
                 }
 
                 for (neighbour in access.getNeighbours(current)) {
-                    if (!neighbour.walkable || closed.contains(neighbour)) {
+                    // TODO: Reimplement walkable with node priority
+                    if (/*!neighbour.walkable || */closed.contains(neighbour)) {
                         continue
                     }
                     val overallCost = current.gCost + getMovementCost(current, neighbour)

@@ -11,8 +11,4 @@ data class SessionDataModel(
     override fun hashCode() = identifier.hashCode() shl 16 or Arrays.hashCode(snapshots)
 
     override fun equals(other: Any?) = other is SessionDataModel && other.identifier == identifier && Arrays.equals(other.snapshots, snapshots)
-
-    class Arena(
-            @SerializedName("tiles") val tiles: LongArray
-    )
 }

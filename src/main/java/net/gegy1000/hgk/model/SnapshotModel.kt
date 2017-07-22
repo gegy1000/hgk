@@ -4,7 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class SnapshotModel(
         @SerializedName("update_index") val updateIndex: Int,
-        @SerializedName("entities") val entities: Array<SnapshotModel.Entity>
+        @SerializedName("entities") val entities: Array<SnapshotModel.Entity>,
+        @SerializedName("status_updates") val statusUpdates: Array<String>
 ) {
     override fun hashCode() = updateIndex
 

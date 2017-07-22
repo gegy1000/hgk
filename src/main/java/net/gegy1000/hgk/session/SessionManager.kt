@@ -1,8 +1,10 @@
 package net.gegy1000.hgk.session
 
 import net.gegy1000.hgk.TimerConstants
-import net.gegy1000.hgk.entity.BasePlayerStatistics
 import net.gegy1000.hgk.entity.Player
+import net.gegy1000.hgk.entity.PlayerStatistics
+import net.gegy1000.hgk.entity.Pronoun
+import net.gegy1000.hgk.model.PlayerInfoModel
 import net.gegy1000.hgk.model.SessionCreationModel
 import java.util.Random
 import kotlin.concurrent.fixedRateTimer
@@ -29,7 +31,9 @@ object SessionManager {
     fun create(creationData: SessionCreationModel): GameSession {
         val identifier = generateIdentifier()
         val session = GameSession(identifier, creationData.seed)
-        session.entities.addAll(creationData.players.map { Player(session.arena, it.name, it.statistics ?: BasePlayerStatistics.random(session.random)) })
+        session.entities.addAll(creationData.players.map {
+            Player(session.arena, PlayerStatistics.random(session.random), PlayerInfoModel(it.name, it.pronoun ?: Pronoun.NEUTRAL))
+        })
         sessions.put(identifier, session)
         return session
     }

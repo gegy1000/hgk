@@ -3,7 +3,6 @@ package net.gegy1000.hgk.session
 import net.gegy1000.hgk.TimerConstants
 import net.gegy1000.hgk.arena.Arena
 import net.gegy1000.hgk.entity.Entity
-import net.gegy1000.hgk.model.SessionDataModel
 import net.gegy1000.hgk.model.SessionSetupModel
 import net.gegy1000.hgk.model.SnapshotModel
 import org.slf4j.Logger
@@ -29,7 +28,17 @@ data class GameSession(val identifier: String, val seed: Long) {
 
     val snapshots = ArrayList<SnapshotModel>()
 
+    val statusUpdates = ArrayList<String>()
+
+    fun post(message: StatusMessage) {
+        val status = message.toString()
+        logger.info(status)
+        statusUpdates.add(status)
+    }
+
     private fun update() {
+        statusUpdates.clear()
+
         entities.forEach { it.update() }
 
         snapshots.add(createSnapshot())
@@ -37,6 +46,7 @@ data class GameSession(val identifier: String, val seed: Long) {
     }
 
     private fun skipTicks(count: Int) {
+        statusUpdates.clear()
         repeat(count) {
             snapshots.add(createSnapshot())
             updateIndex++
@@ -45,7 +55,7 @@ data class GameSession(val identifier: String, val seed: Long) {
 
     private fun createSnapshot(): SnapshotModel {
         val entities = entities.map { SnapshotModel.Entity(it.type, it.tileX, it.tileY, it.model) }.toTypedArray()
-        return SnapshotModel(updateIndex, entities)
+        return SnapshotModel(updateIndex, entities, statusUpdates.toTypedArray())
     }
 
     @Synchronized
@@ -67,6 +77,6 @@ data class GameSession(val identifier: String, val seed: Long) {
 
     fun createSetupInfo(): SessionSetupModel {
         val tiles = LongArray(arena.tiles.size) { arena.tiles[it].toLong() }
-        return SessionSetupModel(identifier, SessionDataModel.Arena(tiles), startTime, TimerConstants.TICK_RATE_MILLIS, TimerConstants.TICKS_PER_DAY)
+        return SessionSetupModel(identifier, SessionSetupModel.Arena(tiles), startTime, TimerConstants.TICK_RATE_MILLIS, TimerConstants.TICKS_PER_DAY)
     }
 }

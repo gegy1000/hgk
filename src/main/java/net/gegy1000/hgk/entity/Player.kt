@@ -1,138 +1,60 @@
 package net.gegy1000.hgk.entity
 
 import com.google.gson.annotations.SerializedName
-import net.gegy1000.hgk.TimerConstants
+import net.gegy1000.hgk.MetabolismConstants
 import net.gegy1000.hgk.arena.Arena
-import net.gegy1000.hgk.entity.ai.Requirement
-import net.gegy1000.hgk.entity.ai.goal.Goal
-import net.gegy1000.hgk.entity.ai.goal.Goal.Type
-import net.gegy1000.hgk.entity.ai.goal.GoalData
-import net.gegy1000.hgk.entity.ai.navigation.Navigator
+import net.gegy1000.hgk.entity.ai.AISystem
+import net.gegy1000.hgk.model.PlayerInfoModel
+import net.gegy1000.hgk.session.StatusMessage
+import net.gegy1000.hgk.session.StatusMessage.Property
 import java.util.EnumMap
+import java.util.Random
 
-class Player(arena: Arena, val name: String, val statistics: BasePlayerStatistics) : Entity(arena, Arena.SIZE / 2, Arena.SIZE / 2) {
-    val navigator = Navigator(this)
-
-    val tilesPerTick: Float
-        get() = statistics.speed * (1.0F - (bodyPartDamage[BodyPart.LEGS] ?: 0.0F)) * ((1.0F - (tiredness / maxTiredness)) * 0.5F + 0.5F)
-
-    val maxHydration = TimerConstants.TICKS_PER_DAY
-    var hydration = maxHydration / 2
-
-    val maxEnergy = TimerConstants.TICKS_PER_DAY
-    var energy = maxEnergy / 2
-
-    val maxTiredness = 100
-    var tiredness = 0
-
-    val foodProcessingSpeed = 3
-    var foodProcessing = 0
-
-    val waterProcessSpeed = 5
-    var waterProcessing = 0
-
-    val thirst: Float
-        get() = 1.0F - (hydration + waterProcessing * 1.4F) / maxHydration.toFloat()
-
-    val hunger: Float
-        get() = 1.0F - (energy + foodProcessing * 1.4F) / maxEnergy.toFloat()
-
-    override val model: Any?
-        get() = Player.Model(name, energy, maxEnergy, hydration, maxHydration)
-
+class Player(arena: Arena, val statistics: PlayerStatistics, val info: PlayerInfoModel) : Entity(arena, Arena.SIZE / 2, Arena.SIZE / 2) {
     override val type = "player"
 
-    private var activeGoal: Goal? = null
+    override val model: Any?
+        get() = Player.Model(info.name, metabolism.energy, MetabolismConstants.MAX_FOOD, metabolism.hydration, MetabolismConstants.MAX_WATER, dead)
 
-    private val goalTypes: MutableMap<Type, Goal> = EnumMap(Type::class.java)
+    val metabolism = Metabolism(this)
+    val ai = AISystem(this)
+
+    var sleepTime = 0
+
+    var dead = false
+
+    val tilesPerTick: Float
+        get() = statistics.speed * (1.0F - (bodyPartDamage[BodyPart.LEGS] ?: 0.0F)) * ((metabolism.stamina / MetabolismConstants.MAX_STAMINA.toFloat()) * 0.5F + 0.5F)
+
+    val random: Random
+        get() = arena.session.random
 
     private val bodyPartDamage: MutableMap<BodyPart, Float> = EnumMap(BodyPart::class.java)
 
-    init {
-        Goal.Type.values().forEach { goalTypes.put(it, it.create(this)) }
-    }
-
     override fun update() {
-        super.update()
+        if (!dead) {
+            ai.update()
+            metabolism.update(ai.moved)
 
-        drainEnergy(1)
-
-        if (waterProcessing > 0) {
-            hydration += waterProcessSpeed
-            waterProcessing -= waterProcessSpeed
-        }
-
-        if (foodProcessing > 0) {
-            energy += foodProcessingSpeed
-            foodProcessing -= foodProcessingSpeed
-        }
-
-        if (tiredness-- < 0) {
-            tiredness = 0
-        } else if (tiredness > maxTiredness) {
-            tiredness = maxTiredness
-        }
-
-        if (hydration-- < 0) {
-            // TODO: dumb player, that's for sure
-        } else if (hydration > maxHydration) {
-            hydration = maxHydration
-        }
-
-        updateRequirements()
-
-        val goal = activeGoal
-
-        if (goal != null) {
-            if (goal.updateDependencies() && (goal.fulfilled || goal.failed)) {
-                activeGoal = null
-                if (!goal.failed) {
-                    logger.info("$name completed goal ${goal.type}")
-                } else {
-                    logger.info("$name failed goal ${goal.type}")
+            if (sleepTime > 0) {
+                sleepTime--
+                if (sleepTime == 0) {
+                    post("event.awake")
                 }
+            }
+
+            if (sleepTime <= 0) {
+                super.update()
             }
         }
     }
 
-    fun drainEnergy(amount: Int): Boolean {
-        energy -= amount
-        tiredness += amount
-        if (energy < 0) {
-            // TODO: Rest your head. It's time for bed.
-            energy = 0
-            return false
-        }
-        return true
+    fun post(key: String) = post(arrayOf(key))
+
+    fun post(keys: Array<String>, properties: Array<Property> = emptyArray()) {
+        val message = StatusMessage(keys, properties + StatusMessage.getDefaultProperties(info)) { it[random.nextInt(it.size)] }
+        arena.session.post(message)
     }
-
-    private fun updateRequirements() {
-        val requirements = Requirement.values().sortedByDescending {
-            val weight = it.baseWeight * it.weightProvider(this)
-            if (weight >= it.minThreshold) weight else -1.0F
-        }
-        requirements.firstOrNull()?.let { requirement ->
-            if (activeGoal?.referrer != requirement) {
-                if (requirement.baseWeight * requirement.weightProvider(this) >= requirement.minThreshold) {
-                    logger.info("$name starting goal ${requirement.goal} from $requirement requirement")
-                    executeGoal(getGoal(requirement.goal), requirement.createInput(), requirement)
-                }
-            }
-        }
-    }
-
-    private fun executeGoal(goal: Goal, input: GoalData, referrer: Requirement? = null) {
-        goal.activeDependency = null
-        goal.dependencyQueue.clear()
-        goal.input = input
-        goal.referrer = referrer
-
-        activeGoal = goal
-
-        goal.start(input)
-    }
-
-    fun getGoal(type: Type): Goal = goalTypes[type] ?: throw IllegalStateException("could not find goal for $type")
 
     enum class BodyPart {
         HEAD,
@@ -146,6 +68,7 @@ class Player(arena: Arena, val name: String, val statistics: BasePlayerStatistic
             @SerializedName("energy") val energy: Int,
             @SerializedName("max_energy") val maxEnergy: Int,
             @SerializedName("hydration") val hydration: Int,
-            @SerializedName("max_hydration") val maxHydration: Int
+            @SerializedName("max_hydration") val maxHydration: Int,
+            @SerializedName("dead") val dead: Boolean
     )
 }

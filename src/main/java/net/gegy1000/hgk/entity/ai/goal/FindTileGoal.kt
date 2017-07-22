@@ -4,7 +4,7 @@ import net.gegy1000.hgk.arena.Arena
 import net.gegy1000.hgk.arena.Tile
 import net.gegy1000.hgk.entity.Player
 
-abstract class FindTileGoal(player: Player, type: Goal.Type) : Goal(player, type) {
+abstract class FindTileGoal(player: Player, type: GoalType) : Goal(player, type) {
     override val fulfilled: Boolean
         get() = foundTile
 
@@ -17,7 +17,7 @@ abstract class FindTileGoal(player: Player, type: Goal.Type) : Goal(player, type
     }
 
     override fun update(input: GoalData) {
-        if (range >= Arena.SIZE) {
+        if (range >= Arena.SIZE / 2) {
             failed = true
             return
         }
@@ -37,6 +37,7 @@ abstract class FindTileGoal(player: Player, type: Goal.Type) : Goal(player, type
                         val tile = player.arena[localX, localY]
                         if (test(tile)) {
                             found(localX, localY)
+                            range++
                             return
                         }
                     }
@@ -54,7 +55,7 @@ abstract class FindTileGoal(player: Player, type: Goal.Type) : Goal(player, type
                 it["x"] = x
                 it["y"] = y
             }
-            call(Goal.Type.MOVE_TO, data, task)
+            call(GoalType.MOVE_TO, data, task)
         }
     }
 
