@@ -10,6 +10,6 @@ data class SessionSetupModel(
         @SerializedName("ticks_per_day") val ticksPerDay: Int
 ) {
     class Arena(
-            @SerializedName("tiles") val tiles: LongArray
+            @SerializedName("tiles") val tiles: IntArray
     )
 }

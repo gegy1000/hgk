@@ -48,7 +48,7 @@ abstract class FindTileGoal(player: Player, type: GoalType) : Goal(player, type)
     }
 
     protected fun moveThen(x: Int, y: Int, task: (success: Boolean) -> Unit) {
-        if (player.tileX == x && player.tileY != y) {
+        if (player.tileX == x && player.tileY == y) {
             task(true)
         } else {
             val data = GoalData {

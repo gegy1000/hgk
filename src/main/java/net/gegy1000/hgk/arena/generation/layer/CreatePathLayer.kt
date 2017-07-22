@@ -1,9 +1,11 @@
 package net.gegy1000.hgk.arena.generation.layer
 
-class CreatePathLayer(private val pathHeight: Float, seed: Long, parent: GenerationLayer<Float>) : GenerationLayer<Float>(seed, parent) {
-    override fun generate(x: Int, y: Int, width: Int, height: Int): Array<Float> {
-        val sampled = sampleParent(x, y, width, height)
-        val result = Array(width * height) { 0.0F }
+import net.gegy1000.hgk.arena.Biome
+
+class CreatePathLayer(seed: Long, val parent: GenerationLayer) : GenerationLayer(seed) {
+    override fun generate(x: Int, y: Int, width: Int, height: Int): IntArray {
+        val sampled = parent.generate(x, y, width, height)
+        val result = IntArray(width * height)
 
         val offsetX = width / 2
         val offsetY = height / 2
@@ -14,7 +16,7 @@ class CreatePathLayer(private val pathHeight: Float, seed: Long, parent: Generat
                 val deltaX = Math.abs(localX - offsetX)
                 val deltaY = Math.abs(localY - offsetY)
                 if (Math.abs(deltaX - deltaY) < 2) {
-                    result[index] = pathHeight
+                    result[index] = Biome.FLAT.ordinal
                 } else {
                     result[index] = sampled[index]
                 }

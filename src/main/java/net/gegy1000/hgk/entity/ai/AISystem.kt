@@ -43,7 +43,7 @@ class AISystem(val player: Player) {
     private fun updateRequirements() {
         val requirements = Requirement.values().sortedByDescending {
             val weight = it.baseWeight * it.weightProvider(player)
-            if (weight >= it.minThreshold) weight else -1.0F
+            if (weight >= it.minThreshold || activeGoal?.type == it.goal) weight else -1.0F
         }
         requirements.firstOrNull()?.let { requirement ->
             if (activeGoal?.referrer != requirement) {

@@ -29,12 +29,12 @@ object MetabolismConstants {
     const val FOOD_PROCESS_SPEED = 5
 
     /**
-     * 8 harvests = 1 day moving
+     * 4 harvests = 1 day moving
      */
-    const val HARVEST_FOOD_INCREMENT = (MAX_FOOD / 2) / 8
+    const val HARVEST_FOOD_INCREMENT = (MAX_FOOD / 2) / 4
 
     /**
-     * 10 drinks = 1 day moving
+     * 5 drinks = 1 day moving
      */
-    const val DRINK_WATER_INCREMENT = MAX_WATER / 10
+    const val DRINK_WATER_INCREMENT = MAX_WATER / 5
 }
