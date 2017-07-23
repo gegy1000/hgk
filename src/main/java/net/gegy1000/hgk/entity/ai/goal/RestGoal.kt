@@ -6,9 +6,10 @@ import net.gegy1000.hgk.entity.Player
 
 class RestGoal(player: Player) : Goal(player, GoalType.REST) {
     override val fulfilled: Boolean
-        get() = MetabolismConstants.MAX_STAMINA - player.metabolism.stamina > MetabolismConstants.MAX_STAMINA * 0.8
+        get() = restTime > MetabolismConstants.MIN_REST_TIME && MetabolismConstants.MAX_STAMINA - player.metabolism.stamina > MetabolismConstants.MAX_STAMINA * 0.8
 
     var lastRest: Int = 0
+    var restTime: Int = 0
 
     override fun start(input: GoalData) {
         val updateIndex = player.arena.session.updateIndex
@@ -18,8 +19,10 @@ class RestGoal(player: Player) : Goal(player, GoalType.REST) {
         }
 
         lastRest = updateIndex
+        restTime = 0
     }
 
     override fun update(input: GoalData) {
+        restTime++
     }
 }

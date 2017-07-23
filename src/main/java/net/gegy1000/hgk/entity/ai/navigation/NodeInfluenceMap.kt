@@ -10,7 +10,7 @@ class NodeInfluenceMap(private val entity: Entity) {
 
     fun update() {
         val entities = entity.arena.session.entities
-        val entityInfluence = entities.filterNot { entity == it }.map { it to it.getInfluence(entity) }
+        val entityInfluence = entities.filterNot { entity == it }.map { it to it.getCostInfluence(entity) }
         if (entityInfluence.isNotEmpty()) {
             for (localY in Arena.COORD_RANGE) {
                 for (localX in Arena.COORD_RANGE) {

@@ -35,7 +35,7 @@ abstract class Entity(val arena: Arena, var x: Double, var y: Double) {
         tickIndex++
     }
 
-    open fun getInfluence(entity: Entity): Int = 0
+    open fun getCostInfluence(entity: Entity): Int = 0
 
     open fun distance(x: Double, y: Double): Double {
         val deltaX = this.x - x

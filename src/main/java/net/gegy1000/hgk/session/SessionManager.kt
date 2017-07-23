@@ -50,7 +50,7 @@ object SessionManager {
 
     fun cleanup() {
         val time = System.currentTimeMillis()
-        sessions.asSequence().filter { time - it.value.lastCall > TimerConstants.SESSION_TIMEOUT_MILLIS }
+        sessions.filter { time - it.value.lastCall > TimerConstants.SESSION_TIMEOUT_MILLIS }
                 .forEach { sessions.remove(it.key) }
     }
 }

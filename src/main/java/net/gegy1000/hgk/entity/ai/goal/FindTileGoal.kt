@@ -31,17 +31,22 @@ abstract class FindTileGoal(player: Player, type: GoalType) : Goal(player, type)
             val maxY = player.tileY + range
             val minX = player.tileX - range
             val maxX = player.tileX + range
+            val foundTiles = ArrayList<Tile>()
             for (localY in minY..maxY) {
                 for (localX in minX..maxX) {
                     if (localX == minX || localX == maxX || localY == minY || localY == maxY) {
                         val tile = player.arena[localX, localY]
                         if (test(tile)) {
-                            found(localX, localY)
-                            range++
-                            return
+                            foundTiles.add(tile)
                         }
                     }
                 }
+            }
+            if (foundTiles.isNotEmpty()) {
+                val tile = foundTiles[player.random.nextInt(foundTiles.size)]
+                found(tile.x, tile.y)
+                range++
+                return
             }
             range++
         }

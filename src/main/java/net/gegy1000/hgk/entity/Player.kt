@@ -52,11 +52,11 @@ class Player(arena: Arena, val statistics: PlayerStatistics, val info: PlayerInf
         }
     }
 
-    override fun getInfluence(entity: Entity): Int {
+    override fun getCostInfluence(entity: Entity): Int {
         if (entity is Player) {
-            return -40
+            return 50
         }
-        return super.getInfluence(entity)
+        return super.getCostInfluence(entity)
     }
 
     fun post(key: String) = post(arrayOf(key))

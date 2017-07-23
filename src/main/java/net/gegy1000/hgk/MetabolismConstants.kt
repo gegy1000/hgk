@@ -7,7 +7,7 @@ object MetabolismConstants {
     const val IDLE_WATER_USAGE = 1
     const val MOVING_WATER_USAGE = 2
 
-    const val IDLE_STAMINA_INCREMENT = 2
+    const val IDLE_STAMINA_INCREMENT = 4
     const val MOVING_STAMINA_DECREMENT = -1
 
     /**
@@ -21,9 +21,14 @@ object MetabolismConstants {
     const val MAX_WATER = TimerConstants.TICKS_PER_DAY * MOVING_WATER_USAGE
 
     /**
-     * 1 hour to drain, 30 minutes to refill
+     * 2 hours to drain, 30 minutes to refill
      */
-    const val MAX_STAMINA = TimerConstants.TICKS_PER_HOUR * -MOVING_STAMINA_DECREMENT
+    const val MAX_STAMINA = TimerConstants.TICKS_PER_HOUR * -MOVING_STAMINA_DECREMENT * 2
+
+    /**
+     * Rest for 30 minutes minimum
+     */
+    const val MIN_REST_TIME = TimerConstants.TICKS_PER_HOUR / 2
 
     const val WATER_PROCESS_SPEED = 3
     const val FOOD_PROCESS_SPEED = 5
