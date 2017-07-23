@@ -4,17 +4,22 @@ import com.google.gson.annotations.SerializedName
 import net.gegy1000.hgk.MetabolismConstants
 import net.gegy1000.hgk.arena.Arena
 import net.gegy1000.hgk.entity.ai.AISystem
+import net.gegy1000.hgk.entity.ai.navigation.NodeInfluenceMap
 import net.gegy1000.hgk.model.PlayerInfoModel
 import net.gegy1000.hgk.session.StatusMessage
 import net.gegy1000.hgk.session.StatusMessage.Property
 import java.util.EnumMap
 import java.util.Random
 
-class Player(arena: Arena, val statistics: PlayerStatistics, val info: PlayerInfoModel) : Entity(arena, Arena.SIZE / 2, Arena.SIZE / 2) {
+class Player(arena: Arena, val statistics: PlayerStatistics, val info: PlayerInfoModel) : Entity(arena, Arena.SIZE / 2.0, Arena.SIZE / 2.0) {
     override val type = "player"
 
     override val model: Any?
         get() = Player.Model(info.name, metabolism.energy, MetabolismConstants.MAX_FOOD, metabolism.hydration, MetabolismConstants.MAX_WATER, dead)
+
+    override val influenceMap = NodeInfluenceMap(this)
+
+    override val influenceRange = 30
 
     val metabolism = Metabolism(this)
     val ai = AISystem(this)
@@ -32,6 +37,8 @@ class Player(arena: Arena, val statistics: PlayerStatistics, val info: PlayerInf
     private val bodyPartDamage: MutableMap<BodyPart, Float> = EnumMap(BodyPart::class.java)
 
     override fun update() {
+        super.update()
+
         if (!dead) {
             ai.update()
             metabolism.update(ai.moved)
@@ -42,11 +49,14 @@ class Player(arena: Arena, val statistics: PlayerStatistics, val info: PlayerInf
                     post("event.awake")
                 }
             }
-
-            if (sleepTime <= 0) {
-                super.update()
-            }
         }
+    }
+
+    override fun getInfluence(entity: Entity): Int {
+        if (entity is Player) {
+            return -40
+        }
+        return super.getInfluence(entity)
     }
 
     fun post(key: String) = post(arrayOf(key))

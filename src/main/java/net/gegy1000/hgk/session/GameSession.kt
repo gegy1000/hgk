@@ -39,7 +39,12 @@ data class GameSession(val identifier: String, val seed: Long) {
     private fun update() {
         statusUpdates.clear()
 
-        entities.forEach { it.update() }
+        entities.forEach {
+            it.update()
+            if (updateIndex % TimerConstants.PATH_RECALCULATE_TICKS == 0) {
+                it.influenceMap.update()
+            }
+        }
 
         snapshots.add(createSnapshot())
         updateIndex++

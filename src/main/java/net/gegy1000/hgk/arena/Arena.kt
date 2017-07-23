@@ -4,8 +4,6 @@ import net.gegy1000.hgk.arena.GroundType.CORNUCOPIA
 import net.gegy1000.hgk.arena.GroundType.GROUND
 import net.gegy1000.hgk.arena.GroundType.OUTSIDE
 import net.gegy1000.hgk.arena.GroundType.WATER
-import net.gegy1000.hgk.arena.VegetationType.FOREST
-import net.gegy1000.hgk.arena.VegetationType.SHRUBLAND
 import net.gegy1000.hgk.arena.generation.layer.CreatePathLayer
 import net.gegy1000.hgk.arena.generation.layer.GenerateHeightsLayer
 import net.gegy1000.hgk.arena.generation.layer.GenerationLayer
@@ -14,10 +12,7 @@ import net.gegy1000.hgk.arena.generation.layer.SeedVegetationLayer
 import net.gegy1000.hgk.arena.generation.layer.scale.FlatFuzzScaleLayer
 import net.gegy1000.hgk.arena.generation.layer.scale.FlatScaleLayer
 import net.gegy1000.hgk.session.GameSession
-import java.awt.image.BufferedImage
-import java.io.File
 import java.util.Random
-import javax.imageio.ImageIO
 
 class Arena(val session: GameSession, seed: Long) {
     companion object {
@@ -38,35 +33,6 @@ class Arena(val session: GameSession, seed: Long) {
     val waterLevel = generationRandom.nextInt(2) + Biome.WATER.max - 1
 
     val tiles: Array<Tile> = generateArena()
-
-    init {
-        val heights = BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_RGB)
-        repeat(SIZE) { localY ->
-            repeat(SIZE) { localX ->
-                val tile = this[localX, localY]
-                val height = tile.height * 2
-                heights.setRGB(localX, localY, (height shl 16) or (height shl 8) or height)
-            }
-        }
-        ImageIO.write(heights, "png", File("heights.png"))
-        val ground = BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_RGB)
-        repeat(SIZE) { localY ->
-            repeat(SIZE) { localX ->
-                val tile = this[localX, localY]
-                ground.setRGB(localX, localY, when (tile.groundType) {
-                    WATER -> 0x0000FF
-                    GROUND -> when (tile.vegetationType) {
-                        FOREST -> 0x00AA50
-                        SHRUBLAND -> 0x80AA50
-                        else -> 0x00FF00
-                    }
-                    CORNUCOPIA -> 0xFFFF00
-                    else -> 0xAABBFF
-                })
-            }
-        }
-        ImageIO.write(ground, "png", File("ground.png"))
-    }
 
     operator fun get(x: Int, y: Int): Tile {
         if (x in COORD_RANGE && y in COORD_RANGE) {

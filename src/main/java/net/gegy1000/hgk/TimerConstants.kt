@@ -6,4 +6,6 @@ object TimerConstants {
     const val TICKS_PER_HOUR = TICKS_PER_DAY / 12
 
     const val SESSION_TIMEOUT_MILLIS = 600000L
+
+    const val PATH_RECALCULATE_TICKS = 5
 }

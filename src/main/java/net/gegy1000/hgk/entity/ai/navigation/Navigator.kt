@@ -8,6 +8,7 @@ class Navigator(private val player: Player) {
     companion object {
         const val STRAIGHT_COST = 10
         const val DIAGONAL_COST = 14
+        const val UP_COST = 70
     }
 
     fun findPath(x: Int, y: Int): Path? {
@@ -38,15 +39,14 @@ class Navigator(private val player: Player) {
                 }
 
                 for (neighbour in access.getNeighbours(current)) {
-                    // TODO: Reimplement walkable with node priority
-                    if (/*!neighbour.walkable || */closed.contains(neighbour)) {
+                    if (!neighbour.walkable || closed.contains(neighbour)) {
                         continue
                     }
-                    val overallCost = current.gCost + getMovementCost(current, neighbour)
+                    val overallCost = current.gCost + getCost(current, neighbour)
                     val hasNeighbour = open.contains(neighbour)
                     if (overallCost < neighbour.gCost || !hasNeighbour) {
                         neighbour.gCost = overallCost
-                        neighbour.hCost = getMovementCost(neighbour, target)
+                        neighbour.hCost = getHeuristic(neighbour, target)
                         neighbour.parent = current
                         if (!hasNeighbour) {
                             open.add(neighbour)
@@ -65,7 +65,14 @@ class Navigator(private val player: Player) {
         return null
     }
 
-    private fun getMovementCost(start: PathNode, target: PathNode): Int {
+    private fun getCost(start: PathNode, target: PathNode): Int {
+        val heuristicCost = getHeuristic(start, target)
+        val heightCost = Math.max(0, target.tile.height - start.tile.height) * UP_COST
+        val typeCost = target.tile.groundType.cost
+        return heuristicCost + heightCost + typeCost + player.influenceMap[target.x, target.y]
+    }
+
+    private fun getHeuristic(start: PathNode, target: PathNode): Int {
         val deltaX = Math.abs(start.x - target.x)
         val deltaY = Math.abs(start.y - target.y)
         if (deltaX > deltaY) {

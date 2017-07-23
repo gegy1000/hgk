@@ -1,7 +1,6 @@
 package net.gegy1000.hgk.entity.ai.navigation
 
 import net.gegy1000.hgk.arena.Arena
-import net.gegy1000.hgk.arena.GroundType
 import java.util.ArrayList
 
 class PathNode(arena: Arena, val x: Int, val y: Int) {
@@ -9,7 +8,7 @@ class PathNode(arena: Arena, val x: Int, val y: Int) {
 
     var parent: PathNode? = null
 
-    val walkable = tile.groundType != GroundType.WATER && tile.groundType != GroundType.OUTSIDE
+    val walkable = tile.groundType.walkable
 
     var gCost: Int = 0
     var hCost: Int = 0

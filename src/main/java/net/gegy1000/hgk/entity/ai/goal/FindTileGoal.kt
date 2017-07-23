@@ -55,7 +55,7 @@ abstract class FindTileGoal(player: Player, type: GoalType) : Goal(player, type)
                 it["x"] = x
                 it["y"] = y
             }
-            call(GoalType.MOVE_TO, data, task)
+            call(GoalType.FOLLOW_PATH, data, task)
         }
     }
 
