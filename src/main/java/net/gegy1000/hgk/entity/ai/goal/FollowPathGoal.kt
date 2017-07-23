@@ -36,7 +36,7 @@ class FollowPathGoal(player: Player) : Goal(player, GoalType.FOLLOW_PATH) {
             val node = path[currentNodeIndex]
             val deltaX = (node.x + 0.5) - player.x
             val deltaY = (node.y + 0.5) - player.y
-            val length = Math.sqrt(deltaX * deltaX + deltaY * deltaY) / player.tilesPerTick
+            val length = Math.sqrt(deltaX * deltaX + deltaY * deltaY) / player.tilesPerTick * node.tile.groundType.speedModifier
 
             player.x += deltaX / length
             player.y += deltaY / length
