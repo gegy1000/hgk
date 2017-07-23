@@ -1,12 +1,17 @@
 package net.gegy1000.hgk.session
 
 import net.gegy1000.hgk.HGKResources
-import net.gegy1000.hgk.model.PlayerInfoModel
+import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.component.ReferralComponent
 
 class StatusMessage(val keys: Array<String>, val properties: Array<Property>, val selector: (Array<String>) -> String) {
     companion object {
-        fun getDefaultProperties(playerInfo: PlayerInfoModel): Array<Property> {
-            return arrayOf(Property("name", playerInfo.name)) + playerInfo.pronoun.properties
+        fun getDefaultProperties(entity: Entity): Array<Property> {
+            val referral = entity.getOrNull(ReferralComponent::class)
+            if (referral != null) {
+                return arrayOf(Property("name", referral.name)) + referral.pronoun.properties
+            }
+            return emptyArray()
         }
     }
 

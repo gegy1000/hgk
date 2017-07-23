@@ -1,47 +1,34 @@
 package net.gegy1000.hgk.entity
 
 import net.gegy1000.hgk.arena.Arena
-import net.gegy1000.hgk.entity.ai.navigation.NodeInfluenceMap
+import net.gegy1000.hgk.entity.component.EntityComponent
+import net.gegy1000.hgk.entity.system.EntitySystem
+import net.gegy1000.hgk.session.StatusMessage
+import net.gegy1000.hgk.session.StatusMessage.Property
 import org.slf4j.Logger
+import java.util.Random
+import kotlin.reflect.KClass
 
-abstract class Entity(val arena: Arena, var x: Double, var y: Double) {
-    abstract val type: String
-
-    abstract val influenceMap: NodeInfluenceMap
-
-    open val influenceRange: Int = 1
-
-    open val model: Any?
-        get() = null
-
+class Entity(val arena: Arena, val components: Set<EntityComponent>, val systems: List<EntitySystem>) {
+    val random: Random
+        get() = arena.session.random
     val logger: Logger
         get() = arena.session.logger
 
-    var tickIndex = 0
+    var updateIndex: Int = 0
 
-    val tileX: Int
-        get() = x.toInt()
-
-    val tileY: Int
-        get() = y.toInt()
-
-    var lastX: Double = x
-    var lastY: Double = y
-
-    open fun update() {
-        lastX = x
-        lastY = y
-
-        tickIndex++
+    operator fun <T : EntityComponent> get(type: KClass<T>): T {
+        return getOrNull(type) ?: throw IllegalArgumentException("Required component $type does not exist on requested entity")
     }
 
-    open fun getCostInfluence(entity: Entity): Int = 0
+    fun <T : EntityComponent> getOrNull(type: KClass<T>): T? = components.filterIsInstance(type.java).firstOrNull()
 
-    open fun distance(x: Double, y: Double): Double {
-        val deltaX = this.x - x
-        val deltaY = this.y - y
-        return Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+    fun hasComponent(type: KClass<out EntityComponent>) = components.filterIsInstance(type.java).isNotEmpty()
+
+    fun post(key: String) = post(arrayOf(key))
+
+    fun post(keys: Array<String>, properties: Array<Property> = emptyArray()) {
+        val message = StatusMessage(keys, properties + StatusMessage.getDefaultProperties(this)) { it[random.nextInt(it.size)] }
+        arena.session.post(message)
     }
-
-    open fun distance(entity: Entity) = distance(entity.x, entity.y)
 }

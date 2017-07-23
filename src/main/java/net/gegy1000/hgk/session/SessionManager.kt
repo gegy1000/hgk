@@ -1,10 +1,19 @@
 package net.gegy1000.hgk.session
 
 import net.gegy1000.hgk.TimerConstants
-import net.gegy1000.hgk.entity.Player
-import net.gegy1000.hgk.entity.PlayerStatistics
+import net.gegy1000.hgk.arena.Arena
 import net.gegy1000.hgk.entity.Pronoun
-import net.gegy1000.hgk.model.PlayerInfoModel
+import net.gegy1000.hgk.entity.component.AIComponent
+import net.gegy1000.hgk.entity.component.InfluenceComponent
+import net.gegy1000.hgk.entity.component.InfluenceMapComponent
+import net.gegy1000.hgk.entity.component.LivingComponent
+import net.gegy1000.hgk.entity.component.MetabolismComponent
+import net.gegy1000.hgk.entity.component.MovementComponent
+import net.gegy1000.hgk.entity.component.NavigationComponent
+import net.gegy1000.hgk.entity.component.PlayerComponent
+import net.gegy1000.hgk.entity.component.PositionComponent
+import net.gegy1000.hgk.entity.component.ReferralComponent
+import net.gegy1000.hgk.entity.component.SleepComponent
 import net.gegy1000.hgk.model.SessionCreationModel
 import java.util.Random
 import kotlin.concurrent.fixedRateTimer
@@ -31,9 +40,21 @@ object SessionManager {
     fun create(creationData: SessionCreationModel): GameSession {
         val identifier = generateIdentifier()
         val session = GameSession(identifier, creationData.seed)
-        session.entities.addAll(creationData.players.map {
-            Player(session.arena, PlayerStatistics.random(session.random), PlayerInfoModel(it.name, it.pronoun ?: Pronoun.NEUTRAL))
-        })
+        session.entityEngine.entities += creationData.players.map {
+            session.entityEngine.builder
+                    .withComponent(LivingComponent())
+                    .withComponent(PositionComponent(Arena.SIZE / 2.0, Arena.SIZE / 2.0))
+                    .withComponent(PlayerComponent.random(session.random))
+                    .withComponent(ReferralComponent(it.name, it.pronoun ?: Pronoun.NEUTRAL))
+                    .withComponent(InfluenceComponent(70, 30))
+                    .withComponent(InfluenceMapComponent())
+                    .withComponent(SleepComponent())
+                    .withComponent(MetabolismComponent())
+                    .withComponent(NavigationComponent(14, 10, 70))
+                    .withComponent(MovementComponent())
+                    .withComponent(AIComponent())
+                    .build()
+        }
         sessions.put(identifier, session)
         return session
     }

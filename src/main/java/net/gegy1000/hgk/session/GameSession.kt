@@ -2,7 +2,7 @@ package net.gegy1000.hgk.session
 
 import net.gegy1000.hgk.TimerConstants
 import net.gegy1000.hgk.arena.Arena
-import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityEngine
 import net.gegy1000.hgk.model.SessionSetupModel
 import net.gegy1000.hgk.model.SnapshotModel
 import org.slf4j.Logger
@@ -12,12 +12,12 @@ import kotlin.system.measureTimeMillis
 
 data class GameSession(val identifier: String, val seed: Long) {
     val logger: Logger = LoggerFactory.getLogger("session-$identifier")
-
     val arena = Arena(this, seed)
-    val random = Random(seed)
 
+    val entityEngine = EntityEngine(arena)
+
+    val random = Random(seed)
     val startTime = System.currentTimeMillis()
-    val entities = ArrayList<Entity>()
 
     var lastCall: Long = startTime
 
@@ -39,12 +39,7 @@ data class GameSession(val identifier: String, val seed: Long) {
     private fun update() {
         statusUpdates.clear()
 
-        entities.forEach {
-            it.update()
-            if (updateIndex % TimerConstants.PATH_RECALCULATE_TICKS == 0) {
-                it.influenceMap.update()
-            }
-        }
+        entityEngine.update()
 
         snapshots.add(createSnapshot())
         updateIndex++
@@ -59,8 +54,7 @@ data class GameSession(val identifier: String, val seed: Long) {
     }
 
     private fun createSnapshot(): SnapshotModel {
-        val entities = entities.map { SnapshotModel.Entity(it.type, it.tileX, it.tileY, it.model) }.toTypedArray()
-        return SnapshotModel(updateIndex, entities, statusUpdates.toTypedArray())
+        return SnapshotModel(updateIndex, statusUpdates.toTypedArray())
     }
 
     @Synchronized

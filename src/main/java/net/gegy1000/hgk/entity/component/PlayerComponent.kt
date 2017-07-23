@@ -1,8 +1,8 @@
-package net.gegy1000.hgk.entity
+package net.gegy1000.hgk.entity.component
 
 import java.util.Random
 
-data class PlayerStatistics(
+data class PlayerComponent(
         val aggresivity: Float,
         val likability: Float,
         val friendliness: Float,
@@ -15,9 +15,9 @@ data class PlayerStatistics(
         val plantKnowledge: Float,
         val craftSkill: Float,
         val firstAidSkill: Float
-) {
+) : EntityComponent {
     companion object {
-        fun random(random: Random) = PlayerStatistics(
+        fun random(random: Random) = PlayerComponent(
                 aggresivity = random.nextFloat(),
                 likability = random.nextFloat(),
                 friendliness = random.nextFloat(),

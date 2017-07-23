@@ -2,9 +2,10 @@ package net.gegy1000.hgk.entity.ai.goal
 
 import net.gegy1000.hgk.arena.Arena
 import net.gegy1000.hgk.arena.Tile
-import net.gegy1000.hgk.entity.Player
+import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.component.PositionComponent
 
-abstract class FindTileGoal(player: Player, type: GoalType) : Goal(player, type) {
+abstract class FindTileGoal(entity: Entity, type: GoalType) : Goal(entity, type) {
     override val fulfilled: Boolean
         get() = foundTile
 
@@ -21,21 +22,22 @@ abstract class FindTileGoal(player: Player, type: GoalType) : Goal(player, type)
             failed = true
             return
         }
-        if (test(player.arena[player.tileX, player.tileY])) {
-            found(player.tileX, player.tileY)
+        val position = entity[PositionComponent::class]
+        if (test(entity.arena[position.tileX, position.tileY])) {
+            found(position.tileX, position.tileY)
             return
         }
         var tries = 0
         while (tries++ < 10 && !foundTile) {
-            val minY = player.tileY - range
-            val maxY = player.tileY + range
-            val minX = player.tileX - range
-            val maxX = player.tileX + range
+            val minY = position.tileY - range
+            val maxY = position.tileY + range
+            val minX = position.tileX - range
+            val maxX = position.tileX + range
             val foundTiles = ArrayList<Tile>()
             for (localY in minY..maxY) {
                 for (localX in minX..maxX) {
                     if (localX == minX || localX == maxX || localY == minY || localY == maxY) {
-                        val tile = player.arena[localX, localY]
+                        val tile = entity.arena[localX, localY]
                         if (test(tile)) {
                             foundTiles.add(tile)
                         }
@@ -43,7 +45,7 @@ abstract class FindTileGoal(player: Player, type: GoalType) : Goal(player, type)
                 }
             }
             if (foundTiles.isNotEmpty()) {
-                val tile = foundTiles[player.random.nextInt(foundTiles.size)]
+                val tile = foundTiles[entity.random.nextInt(foundTiles.size)]
                 found(tile.x, tile.y)
                 range++
                 return
@@ -53,7 +55,8 @@ abstract class FindTileGoal(player: Player, type: GoalType) : Goal(player, type)
     }
 
     protected fun moveThen(x: Int, y: Int, task: (success: Boolean) -> Unit) {
-        if (player.tileX == x && player.tileY == y) {
+        val position = entity[PositionComponent::class]
+        if (position.tileX == x && position.tileY == y) {
             task(true)
         } else {
             val data = GoalData {
