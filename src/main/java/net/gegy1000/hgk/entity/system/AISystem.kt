@@ -1,6 +1,7 @@
 package net.gegy1000.hgk.entity.system
 
 import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.ai.PlayerRequirement
 import net.gegy1000.hgk.entity.ai.goal.Goal
 import net.gegy1000.hgk.entity.ai.goal.GoalData
@@ -12,7 +13,7 @@ import net.gegy1000.hgk.entity.component.SleepComponent
 import net.gegy1000.hgk.notNull
 
 class AISystem : EntitySystem {
-    override val dependencies = listOf(AIComponent::class)
+    override val family = EntityFamily.all(AIComponent::class)
 
     override fun update(entity: Entity) {
         val ai = entity[AIComponent::class]

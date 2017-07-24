@@ -1,14 +1,13 @@
 package net.gegy1000.hgk.entity.system
 
 import net.gegy1000.hgk.entity.Entity
-import net.gegy1000.hgk.entity.component.EntityComponent
-import kotlin.reflect.KClass
+import net.gegy1000.hgk.entity.EntityFamily
 
 interface EntitySystem {
     val phase: Phase
         get() = Phase.TICK
 
-    val dependencies: List<KClass<out EntityComponent>>
+    val family: EntityFamily
 
     fun update(entity: Entity)
 

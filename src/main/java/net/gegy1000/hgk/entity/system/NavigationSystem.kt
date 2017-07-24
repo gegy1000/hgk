@@ -4,6 +4,7 @@ import net.gegy1000.hgk.TimerConstants
 import net.gegy1000.hgk.arena.Arena
 import net.gegy1000.hgk.arena.GroundType
 import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.ai.navigation.Path
 import net.gegy1000.hgk.entity.ai.navigation.PathNode
 import net.gegy1000.hgk.entity.component.InfluenceMapComponent
@@ -16,7 +17,7 @@ class NavigationSystem : EntitySystem {
     override val phase: Phase
         get() = Phase.PRE_TICK
 
-    override val dependencies = listOf(LivingComponent::class, PositionComponent::class, NavigationComponent::class)
+    override val family = EntityFamily.all(NavigationComponent::class, PositionComponent::class, LivingComponent::class)
 
     override fun update(entity: Entity) {
         val living = entity[LivingComponent::class]

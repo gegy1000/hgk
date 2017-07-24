@@ -38,7 +38,7 @@ class EntityEngine(val arena: Arena) {
     }
 
     private fun updatePhase(entity: Entity, phase: EntitySystem.Phase) {
-        entity.systems.filter { it.phase == phase }.forEach {
+        entity.familySystems.filter { it.phase == phase }.forEach {
             it.update(entity)
         }
     }
@@ -49,8 +49,7 @@ class EntityEngine(val arena: Arena) {
         fun withComponent(component: EntityComponent): Builder = apply { components += component }
 
         fun build(): Entity {
-            val componentTypes = components.map { it::class }
-            return Entity(engine.arena, components, engine.systems.filter { componentTypes.containsAll(it.dependencies) })
+            return Entity(engine.arena, components, engine.systems.filter { it.family.supports(components) })
         }
     }
 }

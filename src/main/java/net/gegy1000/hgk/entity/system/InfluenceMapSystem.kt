@@ -3,12 +3,13 @@ package net.gegy1000.hgk.entity.system
 import net.gegy1000.hgk.TimerConstants
 import net.gegy1000.hgk.arena.Arena
 import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.component.InfluenceComponent
 import net.gegy1000.hgk.entity.component.InfluenceMapComponent
 import net.gegy1000.hgk.entity.component.PositionComponent
 
 class InfluenceMapSystem : EntitySystem {
-    override val dependencies = listOf(InfluenceMapComponent::class)
+    override val family = EntityFamily.all(InfluenceMapComponent::class)
 
     override fun update(entity: Entity) {
         if (entity.updateIndex % TimerConstants.PATH_RECALCULATE_TICKS == 0) {

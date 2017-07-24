@@ -4,6 +4,7 @@ import net.gegy1000.hgk.MetabolismConstants
 import net.gegy1000.hgk.arena.GroundType
 import net.gegy1000.hgk.arena.VegetationType
 import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.component.LivingComponent
 import net.gegy1000.hgk.entity.component.MetabolismComponent
 import net.gegy1000.hgk.entity.component.PlayerComponent
@@ -11,6 +12,8 @@ import net.gegy1000.hgk.entity.component.PositionComponent
 import net.gegy1000.hgk.session.StatusMessage.Property
 
 class HarvestFoodGoal(entity: Entity) : Goal(entity, GoalType.HARVEST_FOOD) {
+    override val family = EntityFamily.all(PositionComponent::class, PlayerComponent::class, MetabolismComponent::class)
+
     override val fulfilled: Boolean
         get() = true
 

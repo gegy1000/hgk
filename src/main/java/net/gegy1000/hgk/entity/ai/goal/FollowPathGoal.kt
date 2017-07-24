@@ -1,10 +1,14 @@
 package net.gegy1000.hgk.entity.ai.goal
 
 import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityFamily
+import net.gegy1000.hgk.entity.component.MovementComponent
 import net.gegy1000.hgk.entity.component.NavigationComponent
 import net.gegy1000.hgk.entity.component.PositionComponent
 
 class FollowPathGoal(entity: Entity) : Goal(entity, GoalType.FOLLOW_PATH) {
+    override val family = EntityFamily.all(PositionComponent::class, MovementComponent::class, NavigationComponent::class)
+
     override val fulfilled: Boolean
         get() {
             val input = input ?: return true

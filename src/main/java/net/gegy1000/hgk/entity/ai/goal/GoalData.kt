@@ -1,11 +1,7 @@
 package net.gegy1000.hgk.entity.ai.goal
 
-class GoalData(init: (GoalData) -> Unit = {}) {
+class GoalData {
     private val data = HashMap<String, Any>()
-
-    init {
-        init(this)
-    }
 
     operator fun <T: Any> set(name: String, value: T): GoalData {
         data.put(name, value)

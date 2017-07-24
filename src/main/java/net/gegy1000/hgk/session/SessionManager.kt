@@ -41,19 +41,19 @@ object SessionManager {
         val identifier = generateIdentifier()
         val session = GameSession(identifier, creationData.seed)
         session.entityEngine.entities += creationData.players.map {
-            session.entityEngine.builder
-                    .withComponent(LivingComponent())
-                    .withComponent(PositionComponent(Arena.SIZE / 2.0, Arena.SIZE / 2.0))
-                    .withComponent(PlayerComponent.random(session.random))
-                    .withComponent(ReferralComponent(it.name, it.pronoun ?: Pronoun.NEUTRAL))
-                    .withComponent(InfluenceComponent(70, 30))
-                    .withComponent(InfluenceMapComponent())
-                    .withComponent(SleepComponent())
-                    .withComponent(MetabolismComponent())
-                    .withComponent(NavigationComponent(14, 10, 70))
-                    .withComponent(MovementComponent())
-                    .withComponent(AIComponent())
-                    .build()
+            session.entityEngine.builder.apply {
+                components += LivingComponent()
+                components += PositionComponent(Arena.SIZE / 2.0, Arena.SIZE / 2.0)
+                components += PlayerComponent.random((session.random))
+                components += ReferralComponent(it.name, it.pronoun ?: Pronoun.NEUTRAL)
+                components += InfluenceComponent(70, 30)
+                components += InfluenceMapComponent()
+                components += SleepComponent()
+                components += MetabolismComponent()
+                components += NavigationComponent(14, 10, 70)
+                components += MovementComponent()
+                components += AIComponent()
+            }.build()
         }
         sessions.put(identifier, session)
         return session

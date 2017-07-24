@@ -1,10 +1,15 @@
 package net.gegy1000.hgk.entity.ai.goal
 
 import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.ai.PlayerRequirement
 import java.util.concurrent.LinkedBlockingDeque
 
 abstract class Goal(val entity: Entity, val type: GoalType) {
+    abstract val family: EntityFamily
+
+    abstract val fulfilled: Boolean
+
     open var failed: Boolean = false
 
     var referrer: PlayerRequirement? = null
@@ -12,8 +17,6 @@ abstract class Goal(val entity: Entity, val type: GoalType) {
 
     val dependencyQueue = LinkedBlockingDeque<Dependency>()
     var activeDependency: Dependency? = null
-
-    abstract val fulfilled: Boolean
 
     fun reset(input: GoalData, referrer: PlayerRequirement?) {
         this.activeDependency = null

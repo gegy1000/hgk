@@ -1,6 +1,7 @@
 package net.gegy1000.hgk.entity.system
 
 import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.ai.navigation.Path
 import net.gegy1000.hgk.entity.component.LivingComponent
 import net.gegy1000.hgk.entity.component.MovementComponent
@@ -9,6 +10,8 @@ import net.gegy1000.hgk.entity.component.PositionComponent
 import net.gegy1000.hgk.notNull
 
 abstract class MovementSystem : EntitySystem {
+    override val family = EntityFamily.all(PositionComponent::class, MovementComponent::class, NavigationComponent::class)
+
     override fun update(entity: Entity) {
         val movement = entity[MovementComponent::class]
         movement.movedTick = false

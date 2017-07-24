@@ -9,7 +9,7 @@ import org.slf4j.Logger
 import java.util.Random
 import kotlin.reflect.KClass
 
-class Entity(val arena: Arena, val components: Set<EntityComponent>, val systems: List<EntitySystem>) {
+class Entity(val arena: Arena, val components: Set<EntityComponent>, val familySystems: List<EntitySystem>) {
     val random: Random
         get() = arena.session.random
     val logger: Logger

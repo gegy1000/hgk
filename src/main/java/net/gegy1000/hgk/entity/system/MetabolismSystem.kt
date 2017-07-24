@@ -2,6 +2,7 @@ package net.gegy1000.hgk.entity.system
 
 import net.gegy1000.hgk.MetabolismConstants
 import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.component.LivingComponent
 import net.gegy1000.hgk.entity.component.MetabolismComponent
 import net.gegy1000.hgk.entity.component.MovementComponent
@@ -9,7 +10,7 @@ import net.gegy1000.hgk.entity.component.SleepComponent
 import net.gegy1000.hgk.notNull
 
 class MetabolismSystem : EntitySystem {
-    override val dependencies = listOf(MetabolismComponent::class, LivingComponent::class)
+    override val family = EntityFamily.all(MetabolismComponent::class, LivingComponent::class)
 
     override fun update(entity: Entity) {
         val living = entity[LivingComponent::class]

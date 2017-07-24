@@ -3,9 +3,12 @@ package net.gegy1000.hgk.entity.ai.goal
 import net.gegy1000.hgk.arena.Arena
 import net.gegy1000.hgk.arena.Tile
 import net.gegy1000.hgk.entity.Entity
+import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.component.PositionComponent
 
 abstract class FindTileGoal(entity: Entity, type: GoalType) : Goal(entity, type) {
+    override val family = EntityFamily.all(PositionComponent::class)
+
     override val fulfilled: Boolean
         get() = foundTile
 
@@ -59,9 +62,9 @@ abstract class FindTileGoal(entity: Entity, type: GoalType) : Goal(entity, type)
         if (position.tileX == x && position.tileY == y) {
             task(true)
         } else {
-            val data = GoalData {
-                it["x"] = x
-                it["y"] = y
+            val data = GoalData().apply {
+                this["x"] = x
+                this["y"] = y
             }
             call(GoalType.FOLLOW_PATH, data, task)
         }
