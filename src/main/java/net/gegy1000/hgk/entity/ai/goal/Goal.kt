@@ -2,7 +2,7 @@ package net.gegy1000.hgk.entity.ai.goal
 
 import net.gegy1000.hgk.entity.Entity
 import net.gegy1000.hgk.entity.EntityFamily
-import net.gegy1000.hgk.entity.ai.PlayerRequirement
+import net.gegy1000.hgk.entity.ai.requirement.PlayerRequirement
 import java.util.concurrent.LinkedBlockingDeque
 
 abstract class Goal(val entity: Entity, val type: GoalType) {
@@ -11,6 +11,8 @@ abstract class Goal(val entity: Entity, val type: GoalType) {
     abstract val fulfilled: Boolean
 
     open var failed: Boolean = false
+
+    open val canCancel: Boolean = false
 
     var referrer: PlayerRequirement? = null
     var input: GoalData? = null

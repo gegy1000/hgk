@@ -45,7 +45,7 @@ object SessionManager {
                 components += LivingComponent()
                 components += PositionComponent(Arena.SIZE / 2.0, Arena.SIZE / 2.0)
                 components += PlayerComponent.random((session.random))
-                components += ReferralComponent(it.name, it.pronoun ?: Pronoun.NEUTRAL)
+                components += ReferralComponent(it.name ?: "unnamed player", it.pronoun ?: Pronoun.NEUTRAL)
                 components += InfluenceComponent(70, 30)
                 components += InfluenceMapComponent()
                 components += SleepComponent()

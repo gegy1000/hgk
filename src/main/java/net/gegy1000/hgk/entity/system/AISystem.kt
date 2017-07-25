@@ -2,15 +2,17 @@ package net.gegy1000.hgk.entity.system
 
 import net.gegy1000.hgk.entity.Entity
 import net.gegy1000.hgk.entity.EntityFamily
-import net.gegy1000.hgk.entity.ai.PlayerRequirement
 import net.gegy1000.hgk.entity.ai.goal.Goal
 import net.gegy1000.hgk.entity.ai.goal.GoalData
 import net.gegy1000.hgk.entity.ai.goal.GoalType
+import net.gegy1000.hgk.entity.ai.requirement.PlayerRequirement
+import net.gegy1000.hgk.entity.ai.requirement.RequirementType
 import net.gegy1000.hgk.entity.component.AIComponent
 import net.gegy1000.hgk.entity.component.LivingComponent
 import net.gegy1000.hgk.entity.component.ReferralComponent
 import net.gegy1000.hgk.entity.component.SleepComponent
 import net.gegy1000.hgk.notNull
+import net.gegy1000.hgk.orNull
 
 class AISystem : EntitySystem {
     override val family = EntityFamily.all(AIComponent::class)
@@ -41,17 +43,18 @@ class AISystem : EntitySystem {
 
     private fun updateRequirements(entity: Entity) {
         val ai = entity[AIComponent::class]
-        val requirements = PlayerRequirement.values().sortedByDescending {
-            val weight = it.baseWeight * it.weightProvider(entity)
-            if (weight >= it.minThreshold || ai.activeGoal?.type == it.goal) weight else -1.0F
+        val requirements = RequirementType.values.filter { it.family.supports(entity.components) }.sortedByDescending { requirement ->
+            val weight = requirement.weightMultiplier * requirement.weight(entity)
+            if (weight >= requirement.weightThreshold || ai.activeGoal?.referrer == requirement) weight else -1.0F
         }
         requirements.firstOrNull()?.let { requirement ->
-            if (ai.activeGoal?.referrer != requirement) {
-                if (requirement.baseWeight * requirement.weightProvider(entity) >= requirement.minThreshold) {
+            if (ai.activeGoal?.referrer != requirement && ai.activeGoal?.canCancel.orNull()) {
+                if (requirement.weightMultiplier * requirement.weight(entity) >= requirement.weightThreshold) {
+                    val goal = requirement.goal(entity)
                     if (entity.hasComponent(ReferralComponent::class)) {
-                        entity.logger.info("${entity[ReferralComponent::class].name} starting goal ${requirement.goal} from $requirement requirement")
+                        entity.logger.info("${entity[ReferralComponent::class].name} starting goal $goal from ${requirement::class.simpleName} requirement")
                     }
-                    executeGoal(entity, getGoal(entity, requirement.goal), requirement.createInput(), requirement)
+                    executeGoal(entity, getGoal(entity, goal), requirement.data(entity, goal), requirement)
                 }
             }
         }
@@ -68,18 +71,22 @@ class AISystem : EntitySystem {
 
                 val dependencyGoal = getGoal(entity, dependency.type)
 
-                dependencyGoal.reset(dependency.input, goal.referrer)
+                if (dependencyGoal.family.supports(entity.components)) {
+                    dependencyGoal.reset(dependency.input, goal.referrer)
 
-                if (entity.hasComponent(ReferralComponent::class)) {
-                    entity.logger.info("${entity[ReferralComponent::class].name} starting dependency goal ${dependency.type}")
-                }
+                    if (entity.hasComponent(ReferralComponent::class)) {
+                        entity.logger.info("${entity[ReferralComponent::class].name} starting dependency goal ${dependency.type}")
+                    }
 
-                dependencyGoal.start(dependency.input)
+                    dependencyGoal.start(dependency.input)
 
-                if (dependencyGoal.failed) {
-                    dependency.complete(false)
+                    if (dependencyGoal.failed) {
+                        dependency.complete(false)
+                    } else {
+                        goal.activeDependency = dependency
+                    }
                 } else {
-                    goal.activeDependency = dependency
+                    dependency.complete(false)
                 }
             }
         } else {
@@ -94,11 +101,13 @@ class AISystem : EntitySystem {
     }
 
     private fun executeGoal(entity: Entity, goal: Goal, input: GoalData, referrer: PlayerRequirement? = null) {
-        goal.reset(input, referrer)
+        if (goal.family.supports(entity.components)) {
+            goal.reset(input, referrer)
 
-        entity[AIComponent::class].activeGoal = goal
+            entity[AIComponent::class].activeGoal = goal
 
-        goal.start(input)
+            goal.start(input)
+        }
     }
 
     fun getGoal(entity: Entity, type: GoalType): Goal {
