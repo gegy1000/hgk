@@ -11,6 +11,9 @@ import net.gegy1000.hgk.arena.generation.layer.SeedBiomesLayer
 import net.gegy1000.hgk.arena.generation.layer.SeedVegetationLayer
 import net.gegy1000.hgk.arena.generation.layer.scale.FlatFuzzScaleLayer
 import net.gegy1000.hgk.arena.generation.layer.scale.FlatScaleLayer
+import net.gegy1000.hgk.arena.tile.ContainerTileData
+import net.gegy1000.hgk.arena.tile.Tile
+import net.gegy1000.hgk.arena.tile.TileData
 import net.gegy1000.hgk.session.GameSession
 import java.util.Random
 
@@ -21,7 +24,8 @@ class Arena(val session: GameSession, seed: Long) {
         const val HALF_SIZE = SIZE / 2
 
         const val HALF_SIZE_SQ = HALF_SIZE * HALF_SIZE
-        const val CORNUCOPIA_RADIUS_SQ = 5 * 5
+
+        const val CORNUCOPIA_SIZE_SQ = 6 * 6
 
         val COORD_RANGE = 0..SIZE - 1
     }
@@ -38,7 +42,7 @@ class Arena(val session: GameSession, seed: Long) {
         if (x in COORD_RANGE && y in COORD_RANGE) {
             return tiles[x + y * SIZE]
         } else {
-            return Tile(x, y, 0, GroundType.OUTSIDE, VegetationType.GRASS)
+            return Tile(x, y, 0, OUTSIDE, VegetationType.GRASS)
         }
     }
 
@@ -51,9 +55,9 @@ class Arena(val session: GameSession, seed: Long) {
         val heightmap = heightLayer.generate(0, 0, SIZE, SIZE)
         val vegetationMap = vegetationLayer.generate(0, 0, SIZE, SIZE)
 
-        return Array(SIZE * SIZE) {
-            generateTile(it % SIZE, it / SIZE, it, heightmap, vegetationMap)
-        }
+        val tiles = Array(SIZE * SIZE) { generateTile(it % SIZE, it / SIZE, it, heightmap, vegetationMap) }
+
+        return tiles
     }
 
     private fun generateTile(x: Int, y: Int, index: Int, heightmap: IntArray, vegetationMap: IntArray): Tile {
@@ -64,11 +68,16 @@ class Arena(val session: GameSession, seed: Long) {
         val vegetation = VegetationType.values()[vegetationMap[index]]
         val groundType = when {
             delta > HALF_SIZE_SQ -> OUTSIDE
-            delta < CORNUCOPIA_RADIUS_SQ -> CORNUCOPIA
+            delta < CORNUCOPIA_SIZE_SQ -> CORNUCOPIA
             height < waterLevel -> WATER
             else -> GROUND
         }
-        return Tile(x, y, height, groundType, vegetation)
+        var tileData: TileData? = null
+        if (groundType == GroundType.CORNUCOPIA && delta % 2 == 0) {
+            // TODO: Needs more bacon soup
+            tileData = ContainerTileData()
+        }
+        return Tile(x, y, height, groundType, vegetation, tileData)
     }
 
     private fun createHeightLayer(biomeLayer: GenerationLayer): GenerationLayer {

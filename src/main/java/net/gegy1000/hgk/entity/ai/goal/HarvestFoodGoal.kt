@@ -29,7 +29,7 @@ class HarvestFoodGoal(entity: Entity) : Goal(entity, GoalType.HARVEST_FOOD) {
             val poison = entity.random.nextFloat()
             if (entity[PlayerComponent::class].plantKnowledge > poison / 4.0) {
                 val metabolismComponent = entity[MetabolismComponent::class]
-                metabolismComponent.foodProcessing += MetabolismConstants.HARVEST_FOOD_INCREMENT
+                metabolismComponent.foodProcessing += MetabolismConstants.LARGE_FRUIT_FOOD_INCREMENT
                 if (metabolismComponent.hunger < 0.2F) {
                     entity.post(arrayOf("goal.find_food_snack.action"), properties)
                 } else {

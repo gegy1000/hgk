@@ -6,6 +6,7 @@ import net.gegy1000.hgk.entity.Entity
 import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.component.InfluenceComponent
 import net.gegy1000.hgk.entity.component.InfluenceMapComponent
+import net.gegy1000.hgk.entity.component.PlayerComponent
 import net.gegy1000.hgk.entity.component.PositionComponent
 
 class InfluenceMapSystem : EntitySystem {
@@ -20,7 +21,8 @@ class InfluenceMapSystem : EntitySystem {
                     for (localX in Arena.COORD_RANGE) {
                         influenceMap[localX, localY] = entities.sumByDouble {
                             val influence = it[InfluenceComponent::class]
-                            val distance = it[PositionComponent::class].distance(localX.toDouble(), localY.toDouble()) / influence.range
+                            val aggressivityScale = 1.0F - ((it.getOrNull(PlayerComponent::class)?.aggressivity ?: 1.0F) * 0.75F + 0.25F)
+                            val distance = (it[PositionComponent::class].distance(localX.toDouble(), localY.toDouble()) / influence.range) * aggressivityScale
                             influence.cost * Math.min(Math.max(1.0 - distance, 0.0), 1.0)
                         }.toShort()
                     }

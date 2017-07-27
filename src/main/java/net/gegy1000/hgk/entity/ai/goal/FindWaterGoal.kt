@@ -2,7 +2,7 @@ package net.gegy1000.hgk.entity.ai.goal
 
 import net.gegy1000.hgk.MetabolismConstants
 import net.gegy1000.hgk.arena.GroundType
-import net.gegy1000.hgk.arena.Tile
+import net.gegy1000.hgk.arena.tile.Tile
 import net.gegy1000.hgk.entity.Entity
 import net.gegy1000.hgk.entity.EntityFamily
 import net.gegy1000.hgk.entity.component.MetabolismComponent

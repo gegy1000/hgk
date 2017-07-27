@@ -75,7 +75,7 @@ data class GameSession(val identifier: String, val seed: Long) {
     }
 
     fun createSetupInfo(): SessionSetupModel {
-        val tiles = IntArray(arena.tiles.size) { arena.tiles[it].toInt() }
-        return SessionSetupModel(identifier, SessionSetupModel.Arena(tiles), startTime, TimerConstants.TICK_RATE_MILLIS, TimerConstants.TICKS_PER_DAY)
+        val tiles = LongArray(arena.tiles.size) { arena.tiles[it].toLong() }
+        return SessionSetupModel(identifier, SessionSetupModel.Arena(Arena.SIZE, tiles), startTime, TimerConstants.TICK_RATE_MILLIS, TimerConstants.TICKS_PER_DAY)
     }
 }

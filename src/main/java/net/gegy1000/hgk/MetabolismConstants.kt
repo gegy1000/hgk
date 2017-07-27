@@ -36,7 +36,12 @@ object MetabolismConstants {
     /**
      * 4 harvests = 1 day moving
      */
-    const val HARVEST_FOOD_INCREMENT = (MAX_FOOD / 2) / 4
+    const val LARGE_FRUIT_FOOD_INCREMENT = (MAX_FOOD / 2) / 4
+
+    /**
+     * 8 harvests = 1 day moving
+     */
+    const val SMALL_FRUIT_FOOD_INCREMENT = (MAX_FOOD / 2) / 8
 
     /**
      * 5 drinks = 1 day moving
